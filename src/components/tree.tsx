@@ -1,8 +1,17 @@
-import { Box, List, ListItem, ListProps, Typography } from "@mui/material";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import { ListItemText, ListProps } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import MailIcon from "@mui/icons-material/Mail";
 import TreeView from "@mui/lab/TreeView";
-import { Button, Divider, ListItemButton, Popover } from "@mui/material";
-import React, {
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import Divider from "@mui/material/Divider";
+import ListItemButton from "@mui/material/ListItemButton";
+import Popover from "@mui/material/Popover";
+import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import {
   MouseEventHandler,
   ReactNode,
   createContext,
@@ -11,9 +20,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-
-import { TreeItem } from "@mui/lab";
 
 export type RenderTree<T extends Record<string, any> = { name: string }> = {
   id: string;
@@ -85,16 +91,16 @@ function Submenu({ menu, depth = 1 }: { menu: IMenu; depth?: number }) {
         ref={ref}
         onClick={(event) => {
           menu.click?.(event);
-          setOpen(true);
+          mode === "expand" && setOpen((p) => !p);
         }}
         onMouseEnter={(event) => {
-          setOpen(true);
+          mode === "popover" && setOpen(true);
         }}
       >
         {menu.label}
         <ArrowRightIcon />
       </ListItemButton>
-      {mode === "popover" && open && (
+      {mode === "popover" && open && menu.submenu && (
         <Popover
           open={open}
           anchorEl={ref.current}
@@ -123,15 +129,15 @@ function Submenu({ menu, depth = 1 }: { menu: IMenu; depth?: number }) {
           </List>
         </Popover>
       )}
-      {mode === "expand" && open && (
+      {mode === "expand" && open && menu.submenu && (
         <List>
-          {menu.submenu?.map((v, i) =>
+          {menu.submenu.map((v, i) =>
             v.type === "separator" ? (
               <Divider key={v.label + "-" + i} />
             ) : v.submenu ? (
               <Submenu menu={v} key={v.label + "-" + i} depth={depth + 1} />
             ) : (
-              <ListItemButton key={v.label} onClick={v.click || handleClose}>
+              <ListItemButton key={v.label} onClick={v.click}>
                 {v.label}
               </ListItemButton>
             )
@@ -151,17 +157,34 @@ export function MenuButton({
 }: {
   menu: IMenu;
   open: boolean;
-  onClick: MouseEventHandler<HTMLButtonElement>;
+  onClick: MouseEventHandler;
   onClose(): void;
-  onMouseEnter?: MouseEventHandler<HTMLButtonElement>;
+  onMouseEnter?: MouseEventHandler;
 }) {
   const { mode } = useContext(MenuContext);
   const ref = useRef(null);
 
   return (
-    <>
-      <ListItemButton ref={ref} onClick={onClick} onMouseEnter={onMouseEnter}>
-        {menu.label}
+    <ListItem sx={{ p: 1 }}>
+      <ListItemButton
+        sx={{ p: 0 }}
+        ref={ref}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+      >
+        <ListItemIcon sx={{ minWidth: 0 }}>
+          {menu.icon || <MailIcon />}
+        </ListItemIcon>
+        {mode === "expand" && (
+          <>
+            <ListItemText>{menu.label}</ListItemText>
+            <ListItemIcon
+              sx={{ minWidth: 0, flex: 1, flexDirection: "row-reverse" }}
+            >
+              {menu.icon || <MailIcon />}
+            </ListItemIcon>
+          </>
+        )}
       </ListItemButton>
       {mode === "popover" && open && menu.submenu && (
         <Popover
@@ -216,7 +239,7 @@ export function MenuButton({
           ) || false}
         </List>
       )}
-    </>
+    </ListItem>
   );
 }
 
@@ -257,24 +280,21 @@ export function Menu({
   return (
     <MenuContext.Provider value={{ mode }}>
       <List {...props}>
-        {menus.map((v, i) => {
-          console.log(opened);
-          return (
-            <MenuButton
-              key={v.label + "-" + i}
-              menu={v}
-              onClick={(e) => {
-                v.click && v.click(e);
-                opened[i] ? closeI(i) : openI(i);
-              }}
-              onMouseEnter={() => {
-                mode === "popover" && opened.includes(true) && openI(i);
-              }}
-              open={opened[i]}
-              onClose={() => closeI(i)}
-            />
-          );
-        })}
+        {menus.map((v, i) => (
+          <MenuButton
+            key={v.label + "-" + i}
+            menu={v}
+            onClick={(e) => {
+              v.click && v.click(e);
+              opened[i] ? closeI(i) : openI(i);
+            }}
+            onMouseEnter={() => {
+              mode === "popover" && opened.includes(true) && openI(i);
+            }}
+            open={opened[i]}
+            onClose={() => closeI(i)}
+          />
+        ))}
       </List>
     </MenuContext.Provider>
   );

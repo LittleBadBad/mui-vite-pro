@@ -181,8 +181,10 @@ export default function Layout() {
             height: 24,
             boxShadow: theme.shadows[1],
             backgroundColor: "white",
+            color: "rgba(0, 0, 0, 0.25)",
             "&:hover": {
-              backgroundColor: grey[300],
+              backgroundColor: "white",
+              color: "rgba(0, 0, 0, 0.65)",
             },
             position: "absolute",
             right: -12,
@@ -201,7 +203,7 @@ export default function Layout() {
           <Menu
             menus={linkList}
             sx={{ flexDirection: "column" }}
-            mode="expand"
+            mode={(open && "expand") || "popover"}
           />
           {/* <Tree<MenuLink>
                     nodes={convertLinks(linkList)}
