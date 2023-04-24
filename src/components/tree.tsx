@@ -20,6 +20,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { Link } from "react-router-dom";
 
 export type RenderTree<T extends Record<string, any> = { name: string }> = {
   id: string;
@@ -300,8 +301,65 @@ export function Menu({
   );
 }
 
-const MenuTree = ({ menus }: { menus: IMenu[] }) => {
-  return <TreeView></TreeView>;
+const MenuItem = ({ menu, depth = 0 }: { menu: IMenu; depth?: number }) => {
+  const [expand, setExpand] = useState(false);
+  return (
+    <ListItem
+      sx={{
+        alignItems: "flex-start",
+        flexDirection: "column",
+        p: 0,
+        position: "relative",
+      }}
+    >
+      <ListItemButton
+        {...(menu.href ? { LinkComponent: Link, to: menu.href } : {})}
+        sx={{ width: 1, p: 0 }}
+        onClick={(e) => {
+          menu.click?.(e);
+          setExpand((p) => !p);
+        }}
+      >
+        <ListItemIcon sx={{ minWidth: 0, p: 1 }}>
+          {menu.icon || <MailIcon />}
+        </ListItemIcon>
+        {menu.label}
+        {menu.submenu?.length && (
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              p: 1,
+              right: 0,
+              position: "absolute",
+              transition: "all .2s",
+              transform: `rotate(${expand ? 180 : 0}deg)`,
+            }}
+          >
+            <KeyboardArrowUpIcon />
+          </ListItemIcon>
+        )}
+      </ListItemButton>
+      {menu.submenu?.length && expand && (
+        <MenuTree menus={menu.submenu} depth={depth + 1} />
+      )}
+    </ListItem>
+  );
+};
+
+export const MenuTree = ({
+  menus,
+  depth = 0,
+}: {
+  menus: IMenu[];
+  depth?: number;
+}) => {
+  return (
+    <List sx={{ width: 1, p: 0, pl: depth ? 1 : 0 }}>
+      {menus.map((v) => (
+        <MenuItem menu={v} depth={depth} />
+      ))}
+    </List>
+  );
 };
 
 export default Tree;

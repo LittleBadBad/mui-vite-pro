@@ -17,7 +17,7 @@ import { useState } from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import grey from "@mui/material/colors/grey";
-import Tree, { IMenu, Menu, RenderTree } from "@/components/tree";
+import Tree, { IMenu, Menu, MenuTree, RenderTree } from "@/components/tree";
 import SentimentSatisfiedIcon from "@mui/icons-material/SentimentSatisfied";
 
 const drawerWidth = 240;
@@ -58,6 +58,30 @@ const linkList: IMenu[] = [
           {
             href: "/admin/sub-page",
             label: "三级菜单",
+            submenu: [
+              {
+                href: "/admin/sub-page",
+                label: "四级菜单",
+                submenu: [
+                  {
+                    href: "/admin/sub-page",
+                    label: "五级菜单",
+                    submenu: [
+                      {
+                        href: "/admin/sub-page",
+                        label: "六级菜单",
+                        submenu: [
+                          {
+                            href: "/admin/sub-page",
+                            label: "七级菜单",
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
@@ -200,11 +224,12 @@ export default function Layout() {
           )}
         </IconButton>
         <Box sx={{ padding: "0 12px", overflowX: "hidden", height: "100%" }}>
-          <Menu
+          {/* <Menu
             menus={linkList}
             sx={{ flexDirection: "column" }}
             mode={(open && "expand") || "popover"}
-          />
+          /> */}
+          <MenuTree menus={linkList} />
           {/* <Tree<MenuLink>
                     nodes={convertLinks(linkList)}
                     renderNode={(n, depth) =>
