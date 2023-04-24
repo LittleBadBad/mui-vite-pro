@@ -117,49 +117,6 @@ function convertLinks(links: MenuLink[]): RenderTree<MenuLink>[] {
   }));
 }
 
-const data: RenderTree[] = [
-  {
-    id: "root",
-    name: "Parent",
-    children: [
-      {
-        id: "1",
-        name: "Child - 1",
-      },
-      {
-        id: "3",
-        name: "Child - 3",
-        children: [
-          {
-            id: "4",
-            name: "Child - 4",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "root1",
-    name: "Parent",
-    children: [
-      {
-        id: "1",
-        name: "Child - 1",
-      },
-      {
-        id: "3",
-        name: "Child - 3",
-        children: [
-          {
-            id: "4",
-            name: "Child - 4",
-          },
-        ],
-      },
-    ],
-  },
-];
-
 export type MenuLink = {
   path?: string;
   title: string;
@@ -229,7 +186,7 @@ export default function Layout() {
             sx={{ flexDirection: "column" }}
             mode={(open && "expand") || "popover"}
           /> */}
-          <MenuTree menus={linkList} />
+          <MenuTree menus={linkList} mode={(open && "expand") || "popover"}/>
           {/* <Tree<MenuLink>
                     nodes={convertLinks(linkList)}
                     renderNode={(n, depth) =>

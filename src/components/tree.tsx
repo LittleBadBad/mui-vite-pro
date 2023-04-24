@@ -349,12 +349,15 @@ const MenuItem = ({ menu, depth = 0 }: { menu: IMenu; depth?: number }) => {
 export const MenuTree = ({
   menus,
   depth = 0,
+  mode,
+  ...props
 }: {
   menus: IMenu[];
   depth?: number;
-}) => {
+  mode: "expand" | "popover";
+} & ListProps) => {
   return (
-    <List sx={{ width: 1, p: 0, pl: depth ? 1 : 0 }}>
+    <List {...props} sx={{ width: 1, p: 0, pl: depth ? 1 : 0, ...props.sx }}>
       {menus.map((v) => (
         <MenuItem menu={v} depth={depth} />
       ))}
